@@ -1,0 +1,32 @@
+﻿{
+  "version": "1.0.1",
+  "title": "Restract.Contract",
+  "description": "Restract.Contract contains all requeired classes for defining Restract proxy contracts.",
+  "authors": [ "Bashir Ansari" ],
+  "packOptions": {
+    "owners": [ "Bashir Ansari" ],
+    "tags": [ "Rest", "Client", "Http", "Restract", "Contract", "Restract.Contract" ],
+    "projectUrl": "https://github.com/bashiransari/Restract"
+  },
+  "scripts": {
+    "postcompile": "dotnet pack --no-build --configuration %compile:Configuration%"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
+    },
+    "net461": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0"
+      }
+    },
+    "net452": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0"
+      }
+    }
+  }
+}

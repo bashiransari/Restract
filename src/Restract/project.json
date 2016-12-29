@@ -1,0 +1,52 @@
+{
+  "version": "1.0.4",
+  "title": "Restract",
+  "description": "Restract is a contract based rest client .",
+  "authors": [ "Bashir Ansari" ],
+  "packOptions": {
+    "owners": [ "Bashir Ansari" ],
+    "tags": [ "Rest", "Contract" ,"Client", "Http", "Restract" ],
+    "projectUrl": "https://github.com/bashiransari/Restract",
+    "licenseUrl": "https://github.com/bashiransari/Restract/blob/master/LICENSE.txt"
+  },
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1",
+    "Microsoft.CodeAnalysis.CSharp": "1.3.2",
+    "Restract.Contract": "1.0.1"
+  },
+  "scripts": {
+    "postcompile": "dotnet pack --no-build --configuration %compile:Configuration%"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Loader": "4.0.0",
+        "System.ComponentModel.TypeConverter": "4.1.0",
+        "System.Reflection": "4.1.0",
+        "System.Reflection.Emit": "4.0.1",
+        "System.Reflection.Emit.ILGeneration": "4.0.1",
+        "System.Linq": "4.1.0",
+        "System.Dynamic.Runtime": "4.0.11"
+      }
+    },
+    "net461": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0"
+      },
+      "dependencies": {
+        "System.Dynamic.Runtime": "4.0.10.0"
+      }
+    },
+    "net452": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0.0"
+      },
+      "dependencies": {
+        "System.Dynamic.Runtime": "4.0.0.0",
+        "System.Threading.Tasks": "4.3.0"
+      }
+    }
+  }
+}
