@@ -21,7 +21,7 @@ PM> Install-Package Restract
 
 ## How to use
 
-You just need to create the service contract and use RestClientFactory to create the http proxy.
+You just need to create the service contract and use RestClientFactory to create the http client.
 
 ### Contract
 
@@ -59,28 +59,33 @@ public interface ICustomersService
 
 ```
 
-## Create proxy with inline config
+## Create client with inline config
 
-By using a RestClientFactory object instance you would be able to create actual proxies out of your contracts.
+By using RestClientFactory you would be able to create http client from contracts.
 
 ```#!csharp
 var customerServiceFactory = new RestClientFactory("http://localhost/testapi"); // create a client factory with "http://localhost/testapi" as baseUrl.
 
-var client = customerServiceFactory.CreateClient<ICustomersService>(); // create the http proxy object
+var client = customerServiceFactory.CreateClient<ICustomersService>(); // create the http client object
 
 var customers = client.Get(); // Do actual http call and receive customers. Easy ;-)
 ```
 
-## Create proxy with Interceptor
+## Create client with Interceptor
 
 Interceptors can have multiple purpose, modify the http request or response, logging, mocking, exception hadling, ...
 An Intercetor is basically a DelegatingHandler used by HttpClient internally, 
 
 ```#!csharp
-var config = new RestClientConfiguration("http://localhost/testapi", new MyAuthorizationInterceptor());
+//using RestClientConfiguration object for more configuration options
+var config = new RestClientConfiguration("http://localhost/testapi", new MyAuthorizationInterceptor()); // Adding first interceptor using constructor
+
+// Adding more interceptors
+config.AddInterceptor<MyAuthInterceptor>(); // Adding interceptor by type
+config.AddInterceptor(new DummyInterceptor()); // Adding interceptor by instance
+config.AddInterceptor(() => new DummyInterceptor2()); // Adding interceptor by factory method
 
 var customerServiceFactory = new RestClientFactory(config);
-customerServiceFactory.Configuration.AddInterceptor<MyAuthInterceptor>();
 
 ```
 
@@ -162,8 +167,7 @@ public class MyAuthorizationInterceptor : HttpMessageInterceptor
 	{
 		request.Headers.Add("my-auth", "123");
 
-		var resp = await base.SendAsync(request, resourceActionDescriptor, methodCallInfo, cancellationToken)
-			.ConfigureAwait(resourceActionDescriptor.ResultDataType.IsAsync);
+		var resp = await base.SendAsync(request, resourceActionDescriptor, methodCallInfo, cancellationToken);
 
 		Console.WriteLine("Response:" + resp.StatusCode);
 		return resp;
@@ -188,7 +192,6 @@ class Program {
 
 [Resource("api/subscriptions/{subscriptionId}/customers/{customerId}/accounts")]
 [Uri("subscriptionId", ValueResolver = typeof(AppSettingsValueResolver))]
-[Header("CorrelationId")]
 [Header("HeaderItem", "StaticValue")]
 public interface IAccountsService
 {
@@ -208,7 +211,7 @@ public class AppSettingsValueResolver : ParameterValueResolver
 
 ## Using DI in intercetors and ParamterValueResolvers
 
-RestClientProxy uses an internal service(ITypeActivator) for activating Intercetors and ParamterValueResolvers. You can replace this service with your own version by using RectClientFactory.UerTypeActivator() extension method.
+Restract uses an internal service(ITypeActivator) for activating Intercetors and ParamterValueResolvers. You can replace this service with your own version by using RectClientFactory.UerTypeActivator() extension method.
 This way you can use your own DI (Autofac, Ninject, AspnetCoreDI, ...) to activate the type.
 
 ### Asp.net core sample
@@ -221,7 +224,7 @@ This way you can use your own DI (Autofac, Ninject, AspnetCoreDI, ...) to activa
     {
         ...
         //configuring restclientfactory
-        factory = new RestClientFactory("http://localhost/RestClientProxyTestWeb");
+        factory = new RestClientFactory("http://localhost/api");
         factory.Configuration.AddInterceptor<MyAuthInterceptor>();
 
         //register IConfigReader as service 
@@ -275,7 +278,7 @@ This way you can use your own DI (Autofac, Ninject, AspnetCoreDI, ...) to activa
 You can replace internal services with your own custom service using RestClientFactory.DependencyResolver property
 
 ```
-using RestApiClientProxy;
+using Restract;
 class Program {
 	void main() {
 		var customerServiceFactory = new RestClientFactory("http://localhost/test/");
